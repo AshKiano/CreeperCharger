@@ -1,0 +1,9 @@
+name: CreeperCharger
+version: '1.2'
+main: com.ashkiano.creepercharger.CreeperCharger
+api-version: '1.16'
+author: AshKiano
+commands:
+  getcharger:
+    description: Get the Creeper Charging Stick
+    usage: /<command>
