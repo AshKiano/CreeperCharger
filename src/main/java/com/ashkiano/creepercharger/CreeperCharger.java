@@ -4,11 +4,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -22,17 +24,26 @@ import java.util.Arrays;
 
 public class CreeperCharger extends JavaPlugin implements Listener {
 
-    // Define the material that will charge the Creeper (can be changed as desired)
-    private final Material chargingItemMaterial = Material.STICK;
-    private final String chargingItemLore = "Charging Creeper Stick";
+    private String chargingItemLore;
+    private String chargingItemName;
+    private String permission;
+
+    private String chargingMessage;
 
     @Override
     public void onEnable() {
+        this.saveDefaultConfig();
+        chargingItemLore = getConfig().getString("chargingItemLore", "Charging Creeper Torch");
+        chargingItemName = getConfig().getString("chargingItemName", "Creeper Charger");
+        permission = getConfig().getString("chargingPermission", "creepercharger.use");
+        chargingMessage = getConfig().getString("chargingMessage", "Creeper has been charged!");
+
+
         Bukkit.getPluginManager().registerEvents(this, this);
 
         Metrics metrics = new Metrics(this, 19366);
 
-        this.getLogger().info("Thank you for using the CreeperCharger plugin! If you enjoy using this plugin, please consider making a donation to support the development. You can donate at: https://paypal.me/josefvyskocil");
+        this.getLogger().info("Thank you for using the CreeperCharger plugin! If you enjoy using this plugin, please consider making a donation to support the development. You can donate at: https://donate.ashkiano.com");
 
         checkForUpdates();
     }
@@ -42,10 +53,12 @@ public class CreeperCharger extends JavaPlugin implements Listener {
         if (event.getRightClicked() instanceof Creeper) {
             Player player = event.getPlayer();
             ItemStack itemInHand = player.getInventory().getItemInMainHand();
-            if (itemInHand.getType() == chargingItemMaterial && itemInHand.getItemMeta().hasLore() && itemInHand.getItemMeta().getLore().contains(chargingItemLore)) {
+            ItemMeta meta = itemInHand.getItemMeta();
+
+            if (itemInHand.getType() == Material.REDSTONE_TORCH && meta != null && meta.hasLore() && meta.getLore().contains(chargingItemLore)) {
                 Creeper creeper = (Creeper) event.getRightClicked();
                 creeper.setPowered(true);
-                player.sendMessage("Creeper has been charged!");
+                player.sendMessage(chargingMessage);
             }
         }
     }
@@ -54,16 +67,31 @@ public class CreeperCharger extends JavaPlugin implements Listener {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (command.getName().equalsIgnoreCase("getcharger") && sender instanceof Player) {
             Player player = (Player) sender;
-            ItemStack chargingItem = new ItemStack(chargingItemMaterial);
+            if (!player.hasPermission(permission)) {
+                return false;
+            }
+            ItemStack chargingItem = new ItemStack(Material.REDSTONE_TORCH);
             ItemMeta meta = chargingItem.getItemMeta();
+
+            // Add name and lore
+            meta.setDisplayName(chargingItemName);
             meta.setLore(Arrays.asList(chargingItemLore));
+
+            // Add enchanted effect
+            meta.addEnchant(Enchantment.DURABILITY, 1, true);
+
+            // Hide the enchant
+            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+
             chargingItem.setItemMeta(meta);
+
             player.getInventory().addItem(chargingItem);
-            player.sendMessage("You have received the Charging Creeper Stick!");
+            player.sendMessage("You have received the enchanted Charging Creeper Torch!");
             return true;
         }
         return false;
     }
+
 
     private void checkForUpdates() {
         try {

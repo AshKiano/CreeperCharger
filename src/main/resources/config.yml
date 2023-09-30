@@ -1,0 +1,4 @@
+chargingItemLore: "Charging Creeper Torch"
+chargingItemName: "Creeper Charger"
+chargingPermission: "creepercharger.use"
+chargingMessage: "Creeper has been charged!"
