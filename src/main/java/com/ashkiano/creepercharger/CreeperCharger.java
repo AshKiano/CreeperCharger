@@ -55,7 +55,7 @@ public class CreeperCharger extends JavaPlugin implements Listener {
             ItemStack itemInHand = player.getInventory().getItemInMainHand();
             ItemMeta meta = itemInHand.getItemMeta();
 
-            if (itemInHand.getType() == Material.REDSTONE_TORCH && meta != null && meta.hasLore() && meta.getLore().contains(chargingItemLore)) {
+            if (itemInHand.getType() == Material.PAPER && meta != null && meta.hasLore() && meta.getLore().contains(chargingItemLore)) {
                 Creeper creeper = (Creeper) event.getRightClicked();
                 creeper.setPowered(true);
                 player.sendMessage(chargingMessage);
