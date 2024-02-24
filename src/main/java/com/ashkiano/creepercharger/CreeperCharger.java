@@ -37,13 +37,15 @@ public class CreeperCharger extends JavaPlugin implements Listener {
         chargingItemName = getConfig().getString("chargingItemName", "Creeper Charger");
         permission = getConfig().getString("chargingPermission", "creepercharger.use");
         chargingMessage = getConfig().getString("chargingMessage", "Creeper has been charged!");
-
+        boolean showDonateMessage = getConfig().getBoolean("ShowDonateMessage", true);
 
         Bukkit.getPluginManager().registerEvents(this, this);
 
         Metrics metrics = new Metrics(this, 19366);
 
-        this.getLogger().info("Thank you for using the CreeperCharger plugin! If you enjoy using this plugin, please consider making a donation to support the development. You can donate at: https://donate.ashkiano.com");
+        if (showDonateMessage) {
+            this.getLogger().info("Thank you for using the CreeperCharger plugin! If you enjoy using this plugin, please consider making a donation to support the development. You can donate at: https://donate.ashkiano.com");
+        }
 
         checkForUpdates();
     }
